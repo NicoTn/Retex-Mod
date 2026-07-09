@@ -1,0 +1,119 @@
+#include "..\ui\defines.hpp"
+/*
+ * Author: AV
+ * "Live Link" toggle. Watches the file your image editor (Photoshop/GIMP) exports
+ * to, via the `retexlink` callExtension, and re-applies it to the current target +
+ * index every time you save - a live retexture loop with no retyping or repacking.
+ *
+ * The extension rotates the export file to a unique name on each change (tex_<N>.<ext>
+ * in a `retex_live` subfolder) because Arma caches textures by path: re-applying the
+ * SAME path shows the stale cached copy, but a never-before-seen path forces a fresh
+ * disk read. This function just polls the extension for the newest name and applies it
+ * with the same original-caching used by fn_retexApply, so Reset still restores.
+ *
+ * Arguments:
+ * None (reads the dialog controls)
+ *
+ * Return Value:
+ * None
+ */
+
+disableSerialization;
+private _d = findDisplay IDD_RETEX;
+
+// --- If a link is already running, this click stops it. -----------------------
+if (!isNil "ReTex_linkPFH") exitWith {
+    [ReTex_linkPFH] call CBA_fnc_removePerFrameHandler;
+    ReTex_linkPFH = nil;
+    "retexlink" callExtension ["stop", []];
+    if (!isNull _d) then { (_d displayCtrl IDC_RETEX_LINKBTN) ctrlSetText "Live Link: OFF"; };
+    systemChat "ReTex: Live Link stopped.";
+};
+
+if (isNull _d) exitWith {};
+
+// --- Capture the current previewable target + index (mirrors fn_retexApply). ---
+if (isNil "ReTex_parts" || {ReTex_parts isEqualTo []}) exitWith {
+    systemChat "ReTex: nothing selected. Pick objects in Eden, then reopen.";
+};
+
+private _sel = lbCurSel (_d displayCtrl IDC_RETEX_PART);
+if (_sel < 0) then { _sel = 0 };
+(ReTex_parts select _sel) params ["_label", "_objs", "_prev"];
+
+if (!_prev || {_objs isEqualTo []}) exitWith {
+    systemChat format ["ReTex: '%1' can't be live-linked - previewable parts only (Body/Backpack/objects).", _label];
+};
+
+private _idx = parseNumber (ctrlText (_d displayCtrl IDC_RETEX_INDEX));
+if (_idx < 0) exitWith { systemChat "ReTex: selection index must be >= 0."; };
+
+private _export = ctrlText (_d displayCtrl IDC_RETEX_LINK);
+if (_export == "") exitWith {
+    systemChat "ReTex: set the Live Link export file first (the .jpg/.png your editor saves to).";
+};
+
+// --- Is the extension DLL actually loaded? ------------------------------------
+private _ping = "retexlink" callExtension ["ping", []];
+private _pingStr = if (_ping isEqualType []) then { _ping param [0, ""] } else { _ping };
+diag_log format ["[ReTex] ping raw=%1", _ping];
+if (_pingStr == "") exitWith {
+    systemChat "ReTex: retexlink extension NOT loaded. Put retexlink_x64.dll next to arma3_x64.exe, then RESTART Arma.";
+    systemChat "  (Also check -filePatching is on and the DLL isn't blocked: right-click > Properties > Unblock.)";
+};
+systemChat format ["ReTex: extension loaded (%1).", _pingStr];
+
+// --- Ask the extension to start watching the export file. ---------------------
+private _res = "retexlink" callExtension ["watch", [_export]];
+private _msg = if (_res isEqualType []) then { _res param [0, ""] } else { "" };
+diag_log format ["[ReTex] watch(%1) raw=%2", _export, _res];
+if (_msg != "ok") exitWith {
+    private _why = if (_msg == "") then { "extension returned nothing" } else { _msg };
+    systemChat format ["ReTex: Live Link failed to start - %1", _why];
+};
+
+// Show what the extension thinks it's watching - reveals path/typo mismatches.
+private _diag = "retexlink" callExtension ["diag", []];
+systemChat format ["ReTex diag: %1", (if (_diag isEqualType []) then { _diag param [0, ""] } else { _diag })];
+
+ReTex_link     = [_objs, _idx];
+ReTex_linkLast = "";
+ReTex_linkTick = 0;
+if (isNil "ReTex_touched") then { ReTex_touched = []; };
+
+// --- Poll the extension a few times a second; apply on a new path. -------------
+ReTex_linkPFH = [{
+    private _poll = "retexlink" callExtension ["poll", []];
+    private _path = if (_poll isEqualType []) then { _poll param [0, ""] } else { "" };
+
+    // Heartbeat every ~2s so you can watch the counter climb each time you save.
+    // (Debug aid - if 'counter' never increases when you save, the watcher isn't
+    // seeing the file change: check the diag path matches your editor's export.)
+    ReTex_linkTick = ReTex_linkTick + 1;
+    if (ReTex_linkTick % 8 == 0) then {
+        private _dg = "retexlink" callExtension ["diag", []];
+        systemChat format ["ReTex Live [hb]: %1", (if (_dg isEqualType []) then { _dg param [0, ""] } else { _dg })];
+    };
+
+    if (_path == "" || {_path == ReTex_linkLast}) exitWith {};
+    ReTex_linkLast = _path;
+
+    ReTex_link params ["_objs", "_idx"];
+    {
+        private _obj = _x;
+        if (!isNull _obj) then {
+            private _orig = _obj getVariable ["ReTex_orig", createHashMap];
+            if (!(_idx in keys _orig)) then {
+                _orig set [_idx, (getObjectTextures _obj) param [_idx, ""]];
+                _obj setVariable ["ReTex_orig", _orig];
+            };
+            _obj setObjectTexture [_idx, _path];
+            ReTex_touched pushBackUnique _obj;
+        };
+    } forEach _objs;
+    diag_log format ["[ReTex] applied idx %1 -> %2 on %3 obj", _idx, _path, count _objs];
+    systemChat format ["ReTex Live: applied %1", _path];
+}, 0.25] call CBA_fnc_addPerFrameHandler;
+
+(_d displayCtrl IDC_RETEX_LINKBTN) ctrlSetText "Live Link: ON";
+systemChat format ["ReTex: Live Link watching '%1' (%2 obj, index %3). Save from your editor to update.", _export, count _objs, _idx];

@@ -1,0 +1,11 @@
+name = "ReTex - Live Retexture";
+author = "NcTn";
+description = "Eden editor tool: apply textures to an object's hidden selections live in the viewport, bake them into the object init, or copy a config snippet. For iterating on retextures without repacking/restarting. Requires CBA_A3.";
+picture = "";
+logo = "";
+logoSmall = "";
+tooltip = "ReTex - Live Retexture";
+overview = "Live hidden-selection retexture tool for the Eden editor.";
+hideName = 0;
+hidePicture = 1;
+dependencies[] = {"3DEN", "cba_main"};
