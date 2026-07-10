@@ -57,6 +57,6 @@ repacking. One-time setup, then a zero-click iteration loop.
 6. Click **Live Link: ON** again to stop. **Reset** still restores the originals,
    and the link keeps running even if you close the dialog so you can keep iterating.
 
-JPG/PNG load directly, so there's **no PAA step** while iterating — only convert to
+JPG/PNG load directly, so there's **no PAA step** while iterating - only convert to
 `.paa` for the final shipped asset. Behind the scenes each save is copied to a unique
 `retex_live\tex_<N>.<ext>` name to beat the engine's path-keyed texture cache.
