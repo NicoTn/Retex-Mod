@@ -13,16 +13,16 @@ Built for iterating on retextures (uniforms, vehicles, helmets, crates, props)
 
 ## Features
 
-- **Apply (preview)** — live `setObjectTexture` on every selected object.
-- **Reset** — revert the preview to the originals.
-- **Bake to init** — write `setObjectTextureGlobal` into the object init so it
+- **Apply (preview)** - live `setObjectTexture` on every selected object.
+- **Reset** - revert the preview to the originals.
+- **Bake to init** - write `setObjectTextureGlobal` into the object init so it
   persists with the scenario and for JIP. Warns on absolute/loose disk paths that
   won't exist for other players in multiplayer.
-- **Copy config** — clipboard a `setObjectTextureGlobal` line and a
+- **Copy config** - clipboard a `setObjectTextureGlobal` line and a
   `hiddenSelectionsTextures[]` snippet for pasting into a mission or addon.
-- **List selections** — dump a model's hidden selections as `index → name` so you
+- **List selections** - dump a model's hidden selections as `index → name` so you
   know which index and pbo drives which piece.
-- **Live Link (Photoshop/GIMP)** — save in your image editor and the object
+- **Live Link (Photoshop/GIMP)** - save in your image editor and the object
   retextures in Eden automatically, no retyping or repacking. A companion
   extension (`retexlink_x64.dll`) watches your export file and rotates it to a
   unique name each save to defeat the engine's texture cache. JPG/PNG load
