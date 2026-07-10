@@ -26,8 +26,8 @@ Built for iterating on retextures (uniforms, vehicles, helmets, crates, props)
   retextures in Eden automatically, no retyping or repacking. A companion
   extension (`retexlink_x64.dll`) watches your export file and rotates it to a
   unique name each save to defeat the engine's texture cache. JPG/PNG load
-  directly (no PAA step while iterating); **Bake to .paa** converts the final
-  asset via BI's ImageToPAA. See [addon README](addons/retex/README.md) for setup.
+  directly (no PAA step while iterating). See
+  [addon README](addons/retex/README.md) for setup.
 
 
 ## Current limitations

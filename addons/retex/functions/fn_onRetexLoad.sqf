@@ -90,6 +90,6 @@ if (ReTex_parts isEqualTo []) then {
 (_display displayCtrl IDC_RETEX_PATH)  ctrlSetText (if (isNil "ReTex_lastPath")  then { "" }  else { ReTex_lastPath });
 (_display displayCtrl IDC_RETEX_LINK)  ctrlSetText (if (isNil "ReTex_lastLink")  then { "" }  else { ReTex_lastLink });
 // Reflect a Live Link that is still running from a previous open of the dialog.
-if (!isNil "ReTex_linkPFH") then {
+if (!isNil "ReTex_linkActive" && {ReTex_linkActive}) then {
     (_display displayCtrl IDC_RETEX_LINKBTN) ctrlSetText "Live Link: ON";
 };

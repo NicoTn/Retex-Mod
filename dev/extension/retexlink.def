@@ -1,0 +1,4 @@
+EXPORTS
+    RVExtension
+    RVExtensionVersion
+    RVExtensionArgs

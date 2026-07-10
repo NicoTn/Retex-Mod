@@ -179,15 +179,8 @@ class ReTex_Dialog {
             idc = IDC_RETEX_LINKBTN;
             text = "Live Link: OFF";
             x = PX(0.360); y = PY(0.928);
-            w = PW(0.135); h = PH(0.040);
+            w = PW(0.280); h = PH(0.040);
             onButtonClick = "call ReTex_fnc_retexLink";
-        };
-        class BakePaaBtn: RscButton {
-            idc = IDC_RETEX_BAKEPAA;
-            text = "Bake to .paa";
-            x = PX(0.505); y = PY(0.928);
-            w = PW(0.135); h = PH(0.040);
-            onButtonClick = "call ReTex_fnc_retexBakePaa";
         };
     };
 };
