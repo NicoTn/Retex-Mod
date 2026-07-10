@@ -34,5 +34,6 @@ Built for iterating on retextures (uniforms, vehicles, helmets, crates, props)
 
 ## Install / build
 Copy `retexlink_x64.dll` into the folder containing **`arma3_x64.exe`** (same place
-other extensions load from). 
+other extensions load from).
+
 Launch Arma 3 with the `-filePatching` command line! 
