@@ -52,18 +52,29 @@ if (_idx < 0) exitWith { systemChat "ReTex: selection index must be >= 0."; };
 
 private _export = ctrlText (_d displayCtrl IDC_RETEX_LINK);
 if (_export == "") exitWith {
-    systemChat "ReTex: set the Live Link export file first (the .jpg/.png your editor saves to).";
+    systemChat "ReTex: set the Live Link export file first (the .jpg your editor saves to).";
 };
+
+// setObjectTexture only loads .paa/.pac/.jpg/.jpeg - a .png rotates fine but the
+// engine refuses it with "Cannot load texture", so reject it up front.
+private _parts = _export splitString ".";
+private _ext = toLower (_parts param [count _parts - 1, ""]);
+if (count _parts < 2 || {!(_ext in ["jpg", "jpeg", "paa", "pac"])}) exitWith {
+    systemChat format ["ReTex: '.%1' is not a texture format Arma can load. Use .jpg for Live Link.", _ext];
+    systemChat "  (Supported: .jpg .jpeg .paa .pac - PNG is NOT supported by setObjectTexture.)";
+};
+
+if (isNil "ReTex_debug") then { ReTex_debug = false; };
 
 // --- Is the extension DLL actually loaded? ------------------------------------
 private _ping = "retexlink" callExtension ["ping", []];
 private _pingStr = if (_ping isEqualType []) then { _ping param [0, ""] } else { _ping };
 diag_log format ["[ReTex] ping raw=%1", _ping];
 if (_pingStr == "") exitWith {
-    systemChat "ReTex: retexlink extension NOT loaded. Put retexlink_x64.dll next to arma3_x64.exe, then RESTART Arma.";
+    systemChat "ReTex: retexlink extension NOT loaded. Enable the mod and RESTART Arma.";
     systemChat "  (Also check -filePatching is on and the DLL isn't blocked: right-click > Properties > Unblock.)";
 };
-systemChat format ["ReTex: extension loaded (%1).", _pingStr];
+if (ReTex_debug) then { systemChat format ["ReTex: extension loaded (%1).", _pingStr]; };
 
 // --- Ask the extension to start watching the export file. ---------------------
 private _res = "retexlink" callExtension ["watch", [_export]];
@@ -75,8 +86,10 @@ if (_msg != "ok") exitWith {
 };
 
 // Show what the extension thinks it's watching - reveals path/typo mismatches.
-private _diag = "retexlink" callExtension ["diag", []];
-systemChat format ["ReTex diag: %1", (if (_diag isEqualType []) then { _diag param [0, ""] } else { _diag })];
+if (ReTex_debug) then {
+    private _diag = "retexlink" callExtension ["diag", []];
+    systemChat format ["ReTex diag: %1", (if (_diag isEqualType []) then { _diag param [0, ""] } else { _diag })];
+};
 
 if (isNil "ReTex_touched") then { ReTex_touched = []; };
 ReTex_linkActive = true;
@@ -95,7 +108,7 @@ ReTex_linkActive = true;
         // If 'counter' never increases when you save, the watcher isn't seeing the
         // file change - check the diag path matches your editor's export exactly.
         _tick = _tick + 1;
-        if (_tick % 8 == 0) then {
+        if (ReTex_debug && {_tick % 8 == 0}) then {
             private _dg = "retexlink" callExtension ["diag", []];
             systemChat format ["ReTex Live [hb]: %1", (if (_dg isEqualType []) then { _dg param [0, ""] } else { _dg })];
         };
@@ -115,12 +128,12 @@ ReTex_linkActive = true;
                 };
             } forEach _objs;
             diag_log format ["[ReTex] applied idx %1 -> %2 on %3 obj", _idx, _path, count _objs];
-            systemChat format ["ReTex Live: applied %1", _path];
+            if (ReTex_debug) then { systemChat format ["ReTex Live: applied %1", _path]; };
         };
 
         uiSleep 0.25;
     };
-    systemChat "ReTex: Live Link loop ended.";
+    if (ReTex_debug) then { systemChat "ReTex: Live Link loop ended."; };
 };
 
 (_d displayCtrl IDC_RETEX_LINKBTN) ctrlSetText "Live Link: ON";

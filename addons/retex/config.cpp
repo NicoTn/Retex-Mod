@@ -31,6 +31,7 @@ class CfgFunctions {
             class retexSpawnProxy {};// spawn a standalone proxy for a config-only part
             class retexUnload {};   // dialog onUnload: save fields + delete proxies
             class retexLink {};     // toggle Live Link (watch editor export via retexlink ext)
+            class retexDebug {};    // toggle verbose Live Link debug chatter
         };
     };
 };

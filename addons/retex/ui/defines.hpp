@@ -36,6 +36,7 @@
 #define IDC_RETEX_LINK_LBL    91317
 #define IDC_RETEX_LINK        91318   // export file the image editor saves to
 #define IDC_RETEX_LINKBTN     91319   // Live Link toggle
+#define IDC_RETEX_DEBUG       91320   // debug-message toggle (off by default)
 
 // --- Positioning helpers: arguments are fractions (0..1) of the safe zone ---
 #define PX(N) (safezoneX + safezoneW * (N))

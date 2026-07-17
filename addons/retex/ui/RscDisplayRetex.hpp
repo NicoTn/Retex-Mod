@@ -163,7 +163,7 @@ class ReTex_Dialog {
         // Arma's path-keyed texture cache is forced to reload live.
         class LinkLbl: RscText {
             idc = IDC_RETEX_LINK_LBL;
-            text = "Live Link - editor export file (.jpg/.png)";
+            text = "Live Link - editor export file (.jpg)";
             x = PX(0.36); y = PY(0.850);
             w = PW(0.28); h = PH(0.030);
             style = ST_LEFT;
@@ -179,8 +179,16 @@ class ReTex_Dialog {
             idc = IDC_RETEX_LINKBTN;
             text = "Live Link: OFF";
             x = PX(0.360); y = PY(0.928);
-            w = PW(0.280); h = PH(0.040);
+            w = PW(0.185); h = PH(0.040);
             onButtonClick = "call ReTex_fnc_retexLink";
+        };
+        // Verbose extension/heartbeat/apply chatter - off unless you're diagnosing.
+        class DebugBtn: RscButton {
+            idc = IDC_RETEX_DEBUG;
+            text = "Debug: OFF";
+            x = PX(0.550); y = PY(0.928);
+            w = PW(0.090); h = PH(0.040);
+            onButtonClick = "call ReTex_fnc_retexDebug";
         };
     };
 };

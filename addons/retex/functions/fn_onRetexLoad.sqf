@@ -93,3 +93,6 @@ if (ReTex_parts isEqualTo []) then {
 if (!isNil "ReTex_linkActive" && {ReTex_linkActive}) then {
     (_display displayCtrl IDC_RETEX_LINKBTN) ctrlSetText "Live Link: ON";
 };
+// Debug chatter is off by default and persists across reopens once switched on.
+if (isNil "ReTex_debug") then { ReTex_debug = false; };
+(_display displayCtrl IDC_RETEX_DEBUG) ctrlSetText (["Debug: OFF", "Debug: ON"] select ReTex_debug);
