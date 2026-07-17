@@ -45,10 +45,8 @@ repacking. One-time setup, then a zero-click iteration loop.
 **One-time setup**
 1. Make sure `retexlink_x64.dll` is next to `arma3_x64.exe` (see Install above).
 2. Point your editor at a single export file it overwrites on every save:
-   - **Photoshop:** *File → Generate → Image Assets*, then name a layer e.g.
-     `skin.jpg` — it re-exports on every save. (Or record a one-key export action.)
-   - **GIMP:** *File → Export As…* once to `skin.jpg`, then use *File → Overwrite
-     skin.jpg* on each save afterward.
+   - **Photoshop:** *File → Save
+   - **GIMP:** *File → Save
 
 **Each session**
 1. Select the object in Eden and open ReTex (**Ctrl+Shift+R**).
